@@ -38,13 +38,14 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Update epsilon using a decay function of your choice
-        #self.epsilon = self.epsilon - 0.01
+       
         self.trialCount +=1 
         
+        #self.epsilon = self.epsilon - 0.0001
         #self.epsilon = self.alpha**self.trialCount**0.5
         #self.epsilon = math.cos(self.alpha*self.trialCount)
         #self.epsilon = 1/(self.trialCount**2)
-        self.epsilon = math.exp(-self.alpha * self.trialCount)
+        self.epsilon = math.exp(-self.alpha*.003 * self.trialCount)
 
         # Update additional class parameters as needed
         self.next_waypoint = None
@@ -77,7 +78,7 @@ class LearningAgent(Agent):
         # With the hand-engineered features, this learning process gets entirely negated.
         
         # Set 'state' as a tuple of relevant data for the agent        
-        state = (self.next_waypoint, inputs['light'], inputs['right'], inputs['left'], inputs['oncoming'])
+        state = (self.next_waypoint, inputs['light'], inputs['oncoming'])
 
         return state
 
@@ -90,9 +91,7 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Calculate the maximum Q-value of all actions for a given state
-        maxQ = float('-inf')
-        for key,value in self.Q[state].iteritems():
-            maxQ = max(maxQ, value)
+        maxQ = max(self.Q[state].values())
 
         return maxQ 
 
@@ -137,17 +136,19 @@ class LearningAgent(Agent):
                 action = random.choice(self.valid_actions)
             
         # Otherwise, choose an action with the highest Q-value for the current state
+        # Be sure that when choosing an action with highest Q-value that you randomly select between actions that "tie".
             else:
                 highestQ = self.get_maxQ(state)
                 actionsHighest = self.Q[state]
+                actionsToTiebreak = []
                 
                 for key,value in actionsHighest.iteritems():
                     if value == highestQ:
-                        return key
+                        actionsToTiebreak.append(key)
+                
+                action = random.choice(actionsToTiebreak)
 
-        # Be sure that when choosing an action with highest Q-value that you randomly select between actions that "tie".
-        ## HANDLE THIS IN 'get_maxQ'
-
+    
         return action
 
 
@@ -199,7 +200,7 @@ def run():
     #   learning   - set to True to force the driving agent to use Q-learning
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
-    agent = env.create_agent(LearningAgent, learning=True, alpha = 0.01, epsilon=1.0)
+    agent = env.create_agent(LearningAgent, learning=True, alpha = 0.5, epsilon=1.0)
     
     ##############
     # Follow the driving agent
@@ -215,7 +216,7 @@ def run():
     #   display      - set to False to disable the GUI if PyGame is enabled
     #   log_metrics  - set to True to log trial and simulation results to /logs
     #   optimized    - set to True to change the default log file name
-    sim = Simulator(env, update_delay=0.001, log_metrics=True, optimized=True)
+    sim = Simulator(env, update_delay=0.000001, log_metrics=True, optimized=True, display=False)
     #sim = Simulator(env)
 
     ##############
