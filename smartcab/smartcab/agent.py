@@ -48,7 +48,11 @@ class LearningAgent(Agent):
 
         else:
             self.trialCount += 1
-            self.epsilon = self.epsilon - 0.001
+            self.epsilon = math.exp(-self.alpha*0.005 * self.trialCount)
+            #self.epsilon = self.epsilon - 0.0001
+            #self.epsilon = self.alpha**self.trialCount**0.5
+            #self.epsilon = math.cos(self.alpha*self.trialCount)
+            #self.epsilon = 1/(self.trialCount**2)
 
 
         return None
