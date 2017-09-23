@@ -108,7 +108,6 @@ class LearningAgent(Agent):
 
         if self.learning:
             if state not in self.Q.keys():
-                # !CHECK! IS THIS RIGHT ORDER?
                 self.Q[state] = {None:0.0, 'left':0.0, 'right':0.0, 'forward':0.0}
 
         return
@@ -136,14 +135,14 @@ class LearningAgent(Agent):
 
         else:
             r = random.random()
-            if r <= self.epsilon:
+            if r < self.epsilon:
                 action = random.choice(self.valid_actions)
             else:
                 highestQ = self.get_maxQ(state)
-                actionsHighest = self.Q[state]
-                #!CHECK! Should this be returning waypoint key rather than state? Log here?
+                actionsHighest = [action for action, q_value in self.Q[state].iteritems() if q_value == highestQ]
 
-                action = max(actionsHighest, key= actionsHighest.get)
+                #action = max(actionsHighest, key= actionsHighest.get)
+                action = random.choice(actionsHighest)
 
         return action
 
